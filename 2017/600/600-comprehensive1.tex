@@ -53,7 +53,7 @@ $$
 \item $2$ is not like the others, because it is a prime number.
 \item $8$ is not like the others, because it is a perfect cube.
 \item $9$ is not like the others, because it is a perfect square.
-\item $76$ is not like the others, because it is a factor of $19$.
+\item $76$ is not like the others, because it is a multiple of $19$.
 \end{itemize}
 
 \noindent Obvious hacks that are not in the spirit of the question (e.g. ``this is the only one shorter than $N$ characters", ``this is the only one that contains precisely two instances of the letter V") will not be accepted. Also, answers that explicitly reference other members of the set are not allowed. \\[12pt]
@@ -258,5 +258,44 @@ You may use the number of states $|W|$ and/or the sequence-construct $S$ from th
 [8 marks]
 
 \end{enumerate}
+
+\section{Part-Time Jobs}
+\epigraph{Make the money, don't let the money make you \\
+Change the game, don't let the game change you \\
+I'll forever remain faithful \\
+All my people stay true, I say --
+}{\textit{``Make the Money", Macklemore}}
+
+\noindent Many university students in the UK have been working part-time jobs; 2015 statistics from Endsleigh \cite{endsleigh} suggest that 77\% of students work part-time to fund their studies. The author did too; as an overseas student he got pretty close to the 20-hour weekly limit allowed by my student visa. In addition to wages, additional benefits the author foresaw included adding further entries to my CV, gaining work experience and developing other skills as well. It was around early third year when the author learned about something called the \textit{time value of money} as well... \\[12pt]
+Nonetheless, it's important to ensure that one's studies didn't suffer too much. The author fared pretty well in this regard, though he understands the concerns about this (and would not necessarily encourage everyone to take one up!)
+
+\begin{enumerate}
+\item Travis worked a part-time job as an undergraduate teaching assistant. He taught several first-year students various formal proof techniques. For example,
+
+%TODO Some reasoning like proof.
+[6 marks]
+
+\item Russell worked a part-time job at a quantitative finance company. He
+
+%TODO Basic QF question.
+[6 marks]
+
+\item Joel worked a part-time job as a software engineer. The spring term has $11$ weeks, and he would work one day every week. With probability $p$, the work day would be uneventful and he would work a number of hours distributed according to $U(8, 13)$; with probability $1 - p$, a high-priority ticket would arrive and he would work a number of hours distributed according to $U(12, 15)$. $p$ itself is distributed according to $U(a, b)$ with $0 \leq a \leq b \leq 1$. The number of hours Joel worked each week can be assumed conditionally independent given a value of $p$. Let $T$ be the total number of hours Joel worked during the spring term.
+\\[12pt]
+Compute $E(T)$ and $Var(T)$ (this will be in terms of $a$ and $b$). Show all working.
+\\[12pt]
+You may find it useful to recall the following:
+\begin{itemize}
+\item We say that two random variables $X$ and $Y$ are conditionally independent given $Q = q$ iff $f_{X, Y | Q}(x, y | q) = f_{X, Y}(x, y)$ for all values of $x$ and $y$.
+\item The mean of $U(a, b)$ is given by $\dfrac{a+b}{2}$; the variance is given by $\dfrac{(b-a)^2}{12}$.
+\end{itemize}
+[8 marks]
+
+\end{enumerate}
+
+\begin{thebibliography}{9}
+\bibitem{endsleigh}
+``77\% of students now work to fund studies." Accessed 2 January 2017. $<$\url{https://www.endsleigh.co.uk/press-releases/10-august-2015/}$>$
+\end{thebibliography}
 
 \end{document}
