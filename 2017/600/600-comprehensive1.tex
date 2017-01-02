@@ -1,4 +1,4 @@
-\documentclass[11pt]{article}
+\documentclass[12pt, a4paper]{article}
 \usepackage{fullpage}
 \usepackage{graphicx}
 \usepackage{amsmath}
@@ -12,9 +12,10 @@
   language = C,
   basicstyle = \ttfamily \small,
   numbers = left,
-  numberstyle = \tiny,
+  numberstyle = \footnotesize,
   showstringspaces = false
 }
+\usepackage{times}
 
 \title{600 Comprehensive I}
 \author{Jeremy Kong}
@@ -29,10 +30,233 @@
 \item This question was constructed by a student at Imperial College London, and is not intended to be representative of actual examination questions for any specific course at Imperial.
 \item The material students have learned from the compulsory modules in first and second year should be sufficient to answer all questions.
 \item Each question is worth 20 marks; the maximum mark is thus 100.
+\item The questions are roughly arranged in what I think is difficulty order.
 \end{itemize}
 
 \newpage
 $\:$
 \newpage 
+
+\section{A Matter of Perspectives}
+\epigraph{One of these things is not like the others, \\
+Which one is different -- do you know? \\
+Can you tell which thing is not like the others, \\
+I'll tell you if it is so...
+}{\textit{Big Bird, Sesame Street}}
+
+\noindent In this question, you will be given various sets of items. For each item in the set, identify how it might be ``not like the others". For example:
+$$
+2, 8, 9, 76
+$$
+
+\begin{itemize}
+\item $2$ is not like the others, because it is a prime number.
+\item $8$ is not like the others, because it is a perfect cube.
+\item $9$ is not like the others, because it is a perfect square.
+\item $76$ is not like the others, because it is a factor of $19$.
+\end{itemize}
+
+\noindent Obvious hacks that are not in the spirit of the question (e.g. ``this is the only one shorter than $N$ characters", ``this is the only one that contains precisely two instances of the letter V") will not be accepted. Also, answers that explicitly reference other members of the set are not allowed. \\[12pt]
+\noindent Have fun!
+
+\begin{enumerate}
+\item 
+\begin{enumerate}
+\item Kruskal's algorithm
+\item Ford-Fulkerson algorithm
+\item Prim's algorithm
+\item Edmonds-Karp algorithm
+\end{enumerate}
+% Kruskal's is the only one that is typically implemented with a disjoint set union data structure
+% Ford-Fulkerson is the only one that might not run in time polynomial in the input
+% Prim's is the only one that works independently on connected components of a graph
+% Edmonds-Karp is the only one that is p-time and solves maximum flow
+[4 marks]
+
+\item
+\begin{enumerate}
+\item $\mathcal{N}(2, 1)$
+\item $Geometric(0.5)$
+\item $Binomial(10, 0.2)$
+\item $Exponential(0.5)$
+\end{enumerate}
+% Normal is the only one that can go negative.
+% Geometric is the only discrete probability distribution here that isn't bounded.
+% Binomial is the only one that is bounded by 10.
+% Exponential is the only one that has a mode of 0.
+[4 marks]
+
+\item
+For this one, you're not allowed to use examples of words that are only accepted by each of the languages below.
+\begin{enumerate}
+\item $0^n 1^n 2^n$
+\item $0^n 1^n$
+\item $0^n 0^n$
+\item $0^n$
+\end{enumerate}
+% 0^n 1^n 2^n is the only one that's context sensitive
+% 0^n 1^n is a context-free but not regular language
+% 0^n 0^n = 00^* is a regular language, but is not star-free
+% 0^* is a star-free language (because you can use complement)
+[4 marks]
+
+\newpage
+
+\item
+\begin{enumerate}
+\item \texttt{synchronized}
+\item \texttt{Semaphore}
+\item \texttt{ReentrantLock}
+\end{enumerate}
+% synchronized is the only one for which you can't guarantee fairness
+% Semaphore is the only one that's not re-entrant
+% ReentrantLock is the only one for which you can query the current owner of a lock, or synchronize sections which can't be expressed using block structure in a re-entrant way
+[3 marks]
+
+\item
+\begin{enumerate}
+\item JK flip flop
+\item SR flip flop
+\end{enumerate}
+% JK flip flop allows you to use '11' to toggle the output, for SR that is undefined.
+[1 mark -- in a set of 2 you can always take complements]
+
+\item
+\textbf{For this part, identify \textit{two} distinct ways in which each of these functions is not like the others. Also remember the point on obvious hacks.} \\[12pt] 
+All code blocks below are in C++. The standard library function \texttt{pow(x, y)} takes in $x$ and $y$ as doubles, and returns $x^y$ as a double.
+\begin{enumerate}
+\item $\:$
+\begin{lstlisting} 
+double f1(int x) {
+  return (x == 0) ? 1 : 2 * f1(--x);
+}
+\end{lstlisting}
+\item $\:$
+\begin{lstlisting} 
+double f2(int x) {
+  return pow(2, x);
+}
+\end{lstlisting}
+\item $\:$
+\begin{lstlisting} 
+double f3(int x) {
+  if (x == 0) {
+    return 1;
+  } else if (x < 0) {
+    return 1 / f3(-x);
+  }
+  double y = f3(x / 2);
+  return (x % 2 == 0) ? y * y : y * y * 2;
+}
+\end{lstlisting}
+\item $\:$
+\begin{lstlisting} 
+double f4(int x) {
+  return (x == 0) ? 1 :
+    f4(x / 2) * f4(x / 2) * ((x % 2 == 0) ? 1 : 2);
+}
+\end{lstlisting}
+\end{enumerate}
+% f1 is the only one that will (likely) throw a stack overflow if you feed it -1, or the only one that runs in linear time (for a correct answer).
+% f2 is the only one that's totally correct (!). Or the only one that runs in constant time.
+% f3 is the only one that's correct... apart from the minimum value of an integer, where it will stack overflow. Or it's the only one that can stack overflow a machine with unbounded stack.
+% f4 is the only one that is not partially correct, and it actually returns 2^|x|.
+[4 marks]
+
+
+\end{enumerate}
+
+\newpage
+
+\section{Monad}
+\epigraph{Hello from the other side, \\
+I must have called a thousand times \\
+To tell you, I'm sorry for everything that I've done \\
+But when I call, you never seem to be home...
+}{\textit{``Hello", Adele}}
+
+\noindent In this question, we investigate two flavours of \textit{monads} within computer science.
+
+\begin{enumerate}
+\item In functional programming, a \textit{monad} is used to encapsulate values of a certain data type. You are probably familiar with the \texttt{Maybe} monad in Haskell, which is used to allow a null value for data, much like Java or Guava's \texttt{Optional} class:
+
+\begin{lstlisting}
+data Maybe t = Just t | Nothing
+\end{lstlisting}
+
+Monads typically feature two functions:
+\begin{itemize}
+\item A \textit{unit function} (Haskell \texttt{return}), which constructs a monadic type from a given base type, and
+\item A \textit{binding operation} (Haskell \texttt{>>=}) of type \texttt{(M t) -> (t -> M u) -> (M u)}, which in sequence retrieves the objects of type \texttt{t} from the first argument, maps the second argument (which is a function from \texttt{t} to \texttt{M u}) over the objects, extracts the objects of type \texttt{u} from the output of that, and finally combines them to a single \texttt{M u} object.
+\end{itemize}
+
+For example, consider the \texttt{Maybe} monad defined above. We can then define the operations as follows:
+
+\begin{lstlisting}
+return :: a -> Maybe a
+return x = Just x
+
+(>>=) :: Maybe a -> (a -> Maybe b) -> Maybe b
+m >>= g =
+  case m of
+    Nothing -> Nothing
+    Just x -> g x        
+\end{lstlisting}
+
+\begin{enumerate}
+\item The \texttt{List} type is also a monad. Construct the unit and binding functions for \texttt{List}, bearing in mind the semantics indicated above. %3 marks - let's give a few easy points
+
+\item Haskell generally features \textit{lazy evaluation} and \textit{pure functions}. Explain briefly what each of these terms means, and discuss why they might not always be suitable in practical applications. %4 marks
+
+\item Monads are used to handle I/O in Haskell as well. The I/O action \texttt{getLine} has type \texttt{IO String}; it is not a function (because it is clearly nondeterministic). It reads in a line from the console. Conversely, the I/O action \texttt{putStrLn} has type \texttt{String -> IO ()} and prints the input string to the console. \\[12pt]
+Demonstrate how one can implement a Haskell program that reads in a line of input and echoes it to the console, removing all whitespace characters. \\[12pt]
+(Hint: Recall that \texttt{fmap}, for functor \texttt{m}, transforms a function of type \texttt{a -> b} to one of type \texttt{m a -> m b}.) % 3 marks
+
+\item The function \texttt{liftM2} has type \texttt{(a -> b -> c) -> m a -> m b -> m c}. It works as follows:
+\begin{itemize}
+\item The first argument is a function from the raw types \texttt{a} and \texttt{b} to \texttt{c}.
+\item The second argument has values of type \texttt{a} encapsulated in the monad \texttt{m}; the third argument has values of \texttt{b} encapsulated in \texttt{m}.
+\item The function should return the result of applying the function to the values encapsulated in the monads.
+\end{itemize}
+For example, \texttt{liftM2 (+) [1, 2] [4, 8] = [5, 9, 6, 10]}. Implement \texttt{liftM2} using \texttt{>>=}, briefly explaining your answer. %2 marks
+
+\end{enumerate}
+
+[12 marks]
+
+\item \textit{Monadic second-order logic} (MSO) is an extension of first-order logic. First-order logic allows us to quantify over objects in a model; monadic second-order logic allows us to quantify over sets of objects -- for example, we could say that for every set $P$ and for every element $x$, $x$ is either in $P$ or not in $P$ (and not both in and not-in $P$). This would be written as 
+$$
+\forall P. \forall x.  (x \in P \vee x \notin P) \wedge \neg (x \in P \wedge x \notin P)
+$$
+(Full second-order logic also allows us to quantify over relations and functions.)
+
+\begin{enumerate}
+\item Translate to monadic second order logic: \textit{Any set that is bounded has a least upper bound.} You may assume the existence of an ordering $\leq$ on the objects. %2 marks
+
+\item Consider a finite state machine $M$ with states $W$ and a left-total transition relation $R$ (that is, every state has at least one outgoing transition). 
+
+\begin{enumerate}
+\item Let $S$ be a sequence of states in $M$. Further, let $\sharp S$ be the number of elements in $S$. Translate from monadic second order logic to English:
+
+$$
+\exists X. \left( S[0] \in X \wedge S[\sharp S - 1] \notin X \wedge \bigwedge_{i=1}^{\sharp S - 1} S[i - 1] \in X \leftrightarrow S[i] \notin X \right)
+$$
+
+%2 marks
+\item Using only the relation $R$ and \textit{as few additional predicates as required}, translate this statement from English to monadic second order logic.
+\begin{quote}
+\textit{
+It is possible to partition $W$ into three sets, such that there exists a Hamiltonian path in $W$ whereby one never transitions from a node in a set to another node in the same set.
+}
+\end{quote}
+You may use the number of states $|W|$ and/or the sequence-construct $S$ from the previous part.
+%4 marks
+\end{enumerate}
+
+\end{enumerate}
+
+[8 marks]
+
+\end{enumerate}
 
 \end{document}
