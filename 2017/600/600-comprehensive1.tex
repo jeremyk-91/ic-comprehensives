@@ -30,7 +30,7 @@
 \item This question was constructed by a student at Imperial College London, and is not intended to be representative of actual examination questions for any specific course at Imperial.
 \item The material students have learned from the compulsory modules in first and second year should be sufficient to answer all questions.
 \item Each question is worth 20 marks; the maximum mark is thus 100.
-\item The questions are roughly arranged in what I think is difficulty order.
+\item The questions are roughly arranged in what I think is difficulty order. Also, \textit{within each question} the difficulty generally increases as you progress from one part to the next.
 \end{itemize}
 
 \newpage
@@ -192,6 +192,13 @@ Monads typically feature two functions:
 
 For example, consider the \texttt{Maybe} monad defined above. We can then define the operations as follows:
 
+\lstset{
+  language = Haskell,
+  basicstyle = \ttfamily \small,
+  numbers = left,
+  numberstyle = \footnotesize,
+  showstringspaces = false
+}
 \begin{lstlisting}
 return :: a -> Maybe a
 return x = Just x
@@ -202,6 +209,13 @@ m >>= g =
     Nothing -> Nothing
     Just x -> g x        
 \end{lstlisting}
+\lstset{
+  language = C,
+  basicstyle = \ttfamily \small,
+  numbers = left,
+  numberstyle = \footnotesize,
+  showstringspaces = false
+}
 
 \begin{enumerate}
 \item The \texttt{List} type is also a monad. Construct the unit and binding functions for \texttt{List}, bearing in mind the semantics indicated above. %3 marks - let's give a few easy points
@@ -270,17 +284,54 @@ All my people stay true, I say --
 Nonetheless, it's important to ensure that one's studies didn't suffer too much. The author fared pretty well in this regard, though he understands the concerns about this (and would not necessarily encourage everyone to take one up!)
 
 \begin{enumerate}
-\item Travis worked a part-time job as an undergraduate teaching assistant. He taught several first-year students various formal proof techniques. For example,
+\item Travis worked a part-time job as an undergraduate teaching assistant. He taught several first-year students various formal proof techniques. For example, let's consider this extract of x86-64 assembly code.
 
-%TODO Some reasoning like proof.
-[6 marks]
+\begin{lstlisting}
+// PRECONDITIONS:
+// r8 has a reference to a sorted array of +ve 64 bit integers
+// r9 has a reference to a sorted array of +ve 64 bit integers
+// Both arrays are terminated by -1
 
-\item Russell worked a part-time job at a quantitative finance company. He
+mov r10, 0
+mov r11, 0
+mov ecx, 0
+loop:
+mov eax, [r8 + 8 * r10]
+mov ebx, [r9 + 8 * r11]
+cmp eax, -1
+jeq done
+cmp ebx, -1
+jeq done
+cmp eax, ebx
+jne advance
+inc ecx
+inc r10
+inc r11
+jmp loop
+advance:
+jl less
+inc r11
+jmp loop
+less:
+inc r10
+jmp loop
+done:
+// POSTCONDITION: ???
 
-%TODO Basic QF question.
-[6 marks]
+\end{lstlisting}
 
-\item Joel worked a part-time job as a software engineer. The spring term has $11$ weeks, and he would work one day every week. With probability $p$, the work day would be uneventful and he would work a number of hours distributed according to $U(8, 13)$; with probability $1 - p$, a high-priority ticket would arrive and he would work a number of hours distributed according to $U(12, 15)$. $p$ itself is distributed according to $U(a, b)$ with $0 \leq a \leq b \leq 1$. The number of hours Joel worked each week can be assumed conditionally independent given a value of $p$. Let $T$ be the total number of hours Joel worked during the spring term.
+\begin{enumerate}
+\item Formulate a postcondition for the above x86-64 assembly code snippet. Your postcondition should describe the value in the register \texttt{ecx} in relation to the arrays. Do not worry about the other registers.
+\item Formally prove that your postcondition is established by the code.
+\end{enumerate}
+[7 marks]
+
+\item Russell worked a part-time job at a quantitative finance company. There, he learned about various high-frequency trading (HFT) strategies. Clearly, instructions to buy or sell securities are going to involve numbers. However, it is possible for bits to be flipped in transmission. Supposing a 64-bit two's complement representation of numbers, an order to buy $100$ units of a stock could turn into $2^{62} + 100$ if a certain bit is flipped. \\[12pt]
+A common risk mitigation strategy to the above can be resource-intensive, especially if said strategy may require network or computational overhead close to the size of the orders themselves! Given that we have a large volume of instructions to execute per round trip, but even if one or two bits are flipped we still want (most of) the rest of the transactions to go through, outline a suitable strategy to maintain safety and (to some extent) performance whilst minimising overhead. %Idea is something along the lines of a Merkle tree.
+\\[12pt]
+[5 marks]
+
+\item Joel worked a part-time job as a software engineer. The spring term has $11$ weeks, and he would work one day every week. With probability $p$, the work day would be uneventful and he worked a number of hours distributed according to $U(8, 13)$; with probability $1 - p$, a high-priority ticket would arrive and he worked a number of hours distributed according to $U(12, 15)$. $p$ itself is distributed according to $U(a, b)$ with $0 \leq a \leq b \leq 1$. The number of hours Joel worked each week can be assumed conditionally independent given $p$. Let $T$ be the total number of hours Joel worked during the spring term.
 \\[12pt]
 Compute $E(T)$ and $Var(T)$ (this will be in terms of $a$ and $b$). Show all working.
 \\[12pt]
@@ -294,12 +345,56 @@ Var(X) = E(Var(X | Y)) + Var(E(X | Y))
 $$
 \end{itemize}
 [8 marks]
-
 \end{enumerate}
 
+\section{Security Analysis}
+\epigraph{Many shall be restored that now are fallen, \\
+And many shall fall that are now in honor.
+}{\textit{``Ars Poetica", Horace}}
+
+\noindent In this question, we will investigate two flavours of \textit{security analysis}.
+
+\begin{enumerate}
+\item You are probably familiar with the notion of a \textit{hash function}. Let $h : \Sigma \rightarrow 2^N$ be a hash function, where $N$ is a positive integer and $\Sigma$ is a \textit{universe} of values of unbounded size. Of course, $h$ is not bijective -- we refer to the case where $i, j \in \Sigma, i \neq j$ and $h(i) = h(j)$ as a \textit{hash collision}. 
+\begin{enumerate}
+\item Hash functions are often used in cryptography to store message digests, to verify the content of a message. Let $h$ be a hash function, and suppose that $h$ runs in time polynomial in $\Sigma$. Then, 
+\begin{itemize}
+\item $h$ is \textit{preimage-resistant} if given $h(i)$, it is \textit{difficult to compute} $i$.
+\item $h$ is \textit{collision-resistant} if given $i$, it is \textit{difficult to compute} a $j \neq i$ such that $h(i) = h(j)$.
+\item $h$ is \textit{second preimage-resistant} if given $h(i)$, it is \textit{difficult to compute} a $j \neq i$ such that $h(i) = h(j)$.
+\end{itemize}
+By \textit{difficult to compute}, we expect the computation to not be achievable (in the average case) in time polynomial in $N$.
+\begin{enumerate}
+\item Consider the following property: $h$ is \textit{strongly second preimage-resistant} if given $h(i)$, it is \textit{impossible to, in the best case, compute in polynomial time} a $j \neq i$ such that $h(i) = h(j)$. Explain why no hash function can be strongly second preimage-resistant. %2 marks
+
+\item Prove that if $h$ is collision resistant, then it must also be second preimage-resistant. %2 marks
+\end{enumerate}
+
+\item Although there aren't necessarily security implications, we often still want hash functions to distribute keys across the range of possible hash values, for example if using hash-based data structures. A Java \texttt{HashSet} degenerates into a linked list if all of our objects hash to the same value.
+\begin{enumerate}
+\item Explain why Java's \texttt{String::hashCode} method is \textit{not} a hash function according to our definition. %2 marks
+
+\item S
+\end{enumerate}
+
+\end{enumerate}
+\end{enumerate}
+
+\newpage
+\section{Last Shot}
+\epigraph{It's been a long day, without you my friend \\
+And I'll tell you all about it, when I see you again.
+}{\textit{``See You Again", Wiz Khalifa ft. Charlie Puth}}
+\begin{center}
+\textbf{WARNING!} \\[11pt]
+As the final question, this is designed to be the most difficult question in the paper. Good luck!
+\end{center}
+T
+\newpage
 \begin{thebibliography}{9}
 \bibitem{endsleigh}
 ``77\% of students now work to fund studies." Accessed 2 January 2017. $<$\url{https://www.endsleigh.co.uk/press-releases/10-august-2015/}$>$
+
 \end{thebibliography}
 
 \end{document}
