@@ -325,7 +325,7 @@ However, this is problematic because users with the same password can discover e
 \begin{lstlisting}
 public static <E> void probeElement(Set<Set<E>> sets, E element){
   ExecutorService executor = 
-          Executors.getFixedThreadPool(sets.size());
+          Executors.newFixedThreadPool(sets.size());
   sets.forEach(
     set -> executor.submit(new DeleteTask<>(set, element)));
   executor.shutdown();
