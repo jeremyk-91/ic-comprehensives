@@ -459,6 +459,64 @@ Actors are also allowed to create additional actors, and internally maintain
 local state.
 
 \begin{enumerate}
+\item Consider the problem of implementing the actor model in a distributed
+system. We introduce several concepts and ideas from Microsoft's \textit{Orleans} 
+framework \cite{orleans}.
+
+Orleans aims to ``raise the level of the actor abstraction". Specifically, actors
+are virtual entities as opposed to physical ones; the framework, among other
+things, provides a mapping between virtual actors and their physical locations
+in a distributed system. The framework is potentially distributed, and features
+three main subsystems:
+
+\begin{itemize}
+\item Messaging, which sends messages between actors (possibly on
+different servers).
+\item Hosting, which determines which servers to place actors on, and when to
+clean up their resources.
+\item Execution, which runs actors' application code.
+\end{itemize}
+
+\begin{enumerate}
+\item In Orleans, arguments to method calls are deep-copied between actor threads,
+\textit{even if the actors are on the same machine}. 
+\begin{enumerate}
+\item The reason why this is done is to ensure that data is immutable. Propose
+two optimisations that may be relevant in reducing the overhead incurred in making
+these copies.
+\item Briefly discuss how the above optimisations change in overall performance
+impact as the Orleans environment scales to a larger number of servers.
+\end{enumerate}
+%3 marks. The first part: COW, explicit immutable declaration. Second part: assuming
+%actors are randomly distributed among servers, fewer are on the local server.
+%No escaping from deep copy in the remote case...
+\item Orleans' execution engine uses a small number of compute threads, and uses
+what is known as \textit{cooperative multitasking}; that is, threads are always
+allowed to run to completion. 
+
+An alternative to cooperative multitasking is known as 
+\textit{preemptive multitasking}, where threads are given an amount of time to run
+and can be interrupted. This may be implemented either using a thread for each
+actor, or a finite number of worker threads that each rotates between the code
+of multiple different actors. Discuss the pros and cons of cooperative multitasking
+and preemptive multitasking in the context of Orleans.
+%3 marks. Pros: high throughput (avoid context switches, high cache locality).
+%Cons: not good if an individual actor misbehaves. Number of actors can exceed
+%the allowed limit (for the thread/actor solution). High overhead for managing
+%switching (finite no of threads that rotate).
+
+\item Actors in Orleans have their locations stored in a distributed directory,
+which itself is managed by a distributed hash table. This uses the concept of
+\textit{consistent hashing}; each server generates some number of tokens on
+the unit circle. When an actor $A$ is generated, it is generated with its type $T$
+and a GUID $K$. We compute $h(T, K)$ and find the nearest token to us going 
+counter-clockwise; the server which owns that token is the server where $A$ should 
+live.
+
+Show that %TODO non-mutex (section 3.9)
+
+\end{enumerate}
+
 \item The \textit{$\pi$-calculus} is a process calculus that had its design 
 influenced by the actor model. We provide an outline of the syntax of the 
 monadic $\pi$-calculus.
@@ -487,9 +545,9 @@ Express a duplicator in the $\pi$-calculus.
 \item Let's suppose that we allow numeric inputs, and we want to design an
 \textit{incrementor}; it receives a value on a channel and outputs a value that
 is one higher (infinitely many times). A possible expression of this is
-$!(x(v).\overline{x} \langle v + 1 \rangle)$.
+$!(x(v).\overline{x} \langle v + 1 \rangle.0)$.
 
-The above solution is vulnerable to a race condition. Demonstrate a safety
+The above incrementor is not suitable for concurrent execution. Demonstrate a safety
 violation (that is, a process submitting $v$ and \textit{not} receiving $v+1$) 
 with the above expression of the incrementor.
 %2 marks, the problem is that x is common.
@@ -537,14 +595,6 @@ is not required).
 % 3 marks.
 \end{enumerate}
 [11 marks]
-
-\item Consider the problem of actually implementing the actor model in a distributed
-system. We introduce several concepts and ideas from Microsoft's \textit{Orleans} 
-framework \cite{orleans}. So...
-
-\begin{enumerate}
-\item Show that bar.
-\end{enumerate}
 
 \end{enumerate}
 
