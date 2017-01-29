@@ -273,6 +273,102 @@ You may use the number of states $|W|$ and/or the sequence-construct $S$ from th
 
 \end{enumerate}
 
+\section{Potato Party}
+\epigraph{A ``potato" flew around my room before you came \\
+Excuse the mess it made, it usually doesn't rain
+}{a variant of \textit{``Thinkin' About You", Frank Ocean}}
+
+\noindent You are probably familiar with the notion of a \textit{hash function}. Let $h : \Sigma \rightarrow 2^N$ be a hash function, where $N$ is a positive integer and $\Sigma$ is a \textit{universe} of values of unbounded size. Of course, $h$ is not bijective -- we refer to the case where $i, j \in \Sigma, i \neq j$ and $h(i) = h(j)$ as a \textit{hash collision}. 
+\begin{enumerate}
+\item Hash functions are often used in cryptography to store message digests. Let $h$ be a hash function, and suppose that $h$ runs in time polynomial in $N$. Then, 
+\begin{itemize}
+\item $h$ is \textit{preimage-resistant} if given $h(i)$, it is \textit{difficult to compute} $i$.
+\item $h$ is \textit{collision-resistant} if given $i$, it is \textit{difficult to compute} a $j \neq i$ such that $h(i) = h(j)$.
+\item $h$ is \textit{second preimage-resistant} if given $h(i)$, it is \textit{difficult to compute} a $j \neq i$ such that $h(i) = h(j)$.
+\end{itemize}
+By \textit{difficult to compute}, we expect the computation to not be achievable (in the average case) in time polynomial in $N$.
+\begin{enumerate}
+\item Consider the following property: $h$ is \textit{strongly second preimage-resistant} if given $h(i)$, it is \textit{impossible to, in the best case, compute in polynomial time} a $j \neq i$ such that $h(i) = h(j)$. Explain why no hash function can be strongly second preimage-resistant. %2 marks
+
+\item Prove that if $h$ is collision resistant, then it must also be second preimage-resistant. %2 marks
+\end{enumerate}
+
+[4 marks]
+
+\item \texttt{etc/passwd} is a text file on Linux systems, which stores information about local user credentials. The file is named as such because it was previously used to store users' password data; however, typically in modern implementations the information used to validate user passwords isn't present any more. Records include usernames, user identifier numbers and group identifier numbers.
+All users are allowed to read \texttt{etc/passwd} -- and this was true even when password information was stored in the file. 
+\begin{enumerate}
+\item Suggest why read access to \texttt{etc/passwd} might \textit{not} have been restricted only to the root user. (Hint: What information does the file have?)
+
+\item One possible scheme is to compute a hash of user passwords and store them; when users try to verify their password, we compute its hash and check it against the stored hash. We can avoid hash collisions by choosing good hash functions that produce a reasonably long hash (say $512$ bits).
+\\[12pt]
+However, this is problematic because users with the same password can discover each others' passwords. We typically use what is called a \textit{salt}; for \textit{each} user $i$, in addition to their password $P_i$ we also generate and store a salt $S_i$, and store $h(P_i S_i)$.
+\\[12pt]
+\textit{Beyond} preventing users from discovering each others' passwords if they are exactly the same, outline reasons why salts are advantageous in terms of security.
+\end{enumerate}
+
+[6 marks]
+
+\item Although there aren't necessarily security implications, we often still want hash functions to distribute keys across the range of possible hash values, for example if using hash-based data structures. A Java \texttt{HashSet} degenerates into a linked list if all of our objects hash to the same value.
+\begin{enumerate}
+\item Explain why Java's \texttt{String::hashCode} method is \textit{not} a hash function according to our definition. %2 marks
+
+\item Consider the following block of Java code, which claims to remove all objects equal to a given object in a set of sets.
+
+\lstset{
+  language = Java,
+  basicstyle = \ttfamily \footnotesize,
+  numbers = left,
+  numberstyle = \scriptsize,
+  showstringspaces = false
+}
+\begin{lstlisting}
+public static <E> void probeElement(Set<Set<E>> sets, E element){
+  ExecutorService executor = 
+          Executors.getFixedThreadPool(sets.size());
+  sets.forEach(set -> executor.submit(new DeleteTask<>(set, element)));
+  executor.shutdown();
+  try {
+    executor.awaitTermination(5, TimeUnit.MINUTES);
+  } catch (InterruptedException e) {
+    Thread.currentThread().interrupt();
+  }
+}
+
+private static class DeleteTask<V> implements Runnable {
+  private final Set<V> set;
+  private final V elem;
+  
+  public DeleteTask(Set<V> set, V elem) {
+    this.set = set;
+    this.elem = elem;
+  }
+
+  @Override
+  public void run() { set.remove(elem); }
+}
+\end{lstlisting}
+\lstset{
+  language = C,
+  basicstyle = \ttfamily \small,
+  numbers = left,
+  numberstyle = \footnotesize,
+  showstringspaces = false
+}
+
+The following comments are made on the code above in a pull request, with line numbers, where applicable, indicated in brackets. For each comment, indicate whether you agree with the PR comment or not, explaining your answer.
+\begin{enumerate}
+\item \hspace{0pt} [3] The perf of this implementation doesn't look good to me.
+\item \hspace{0pt} [9] Could we add a line of logging here please?
+\item \hspace{0pt} [23] This line may throw an exception which we aren't dealing with. Maybe this is OK, but you should know about this.
+\item \hspace{0pt} This method will not behave as expected, especially if it's a HashSet.
+\end{enumerate}
+%8 marks
+\end{enumerate}
+[10 marks]
+
+\end{enumerate}
+
 \section{Part-Time Jobs}
 \epigraph{Make the money, don't let the money make you \\
 Change the game, don't let the game change you \\
@@ -347,39 +443,6 @@ $$
 [8 marks]
 \end{enumerate}
 
-\section{Security Analysis}
-\epigraph{Many shall be restored that now are fallen, \\
-And many shall fall that are now in honor.
-}{\textit{``Ars Poetica", Horace}}
-
-\noindent In this question, we will investigate two flavours of \textit{security analysis}.
-
-\begin{enumerate}
-\item You are probably familiar with the notion of a \textit{hash function}. Let $h : \Sigma \rightarrow 2^N$ be a hash function, where $N$ is a positive integer and $\Sigma$ is a \textit{universe} of values of unbounded size. Of course, $h$ is not bijective -- we refer to the case where $i, j \in \Sigma, i \neq j$ and $h(i) = h(j)$ as a \textit{hash collision}. 
-\begin{enumerate}
-\item Hash functions are often used in cryptography to store message digests, to verify the content of a message. Let $h$ be a hash function, and suppose that $h$ runs in time polynomial in $\Sigma$. Then, 
-\begin{itemize}
-\item $h$ is \textit{preimage-resistant} if given $h(i)$, it is \textit{difficult to compute} $i$.
-\item $h$ is \textit{collision-resistant} if given $i$, it is \textit{difficult to compute} a $j \neq i$ such that $h(i) = h(j)$.
-\item $h$ is \textit{second preimage-resistant} if given $h(i)$, it is \textit{difficult to compute} a $j \neq i$ such that $h(i) = h(j)$.
-\end{itemize}
-By \textit{difficult to compute}, we expect the computation to not be achievable (in the average case) in time polynomial in $N$.
-\begin{enumerate}
-\item Consider the following property: $h$ is \textit{strongly second preimage-resistant} if given $h(i)$, it is \textit{impossible to, in the best case, compute in polynomial time} a $j \neq i$ such that $h(i) = h(j)$. Explain why no hash function can be strongly second preimage-resistant. %2 marks
-
-\item Prove that if $h$ is collision resistant, then it must also be second preimage-resistant. %2 marks
-\end{enumerate}
-
-\item Although there aren't necessarily security implications, we often still want hash functions to distribute keys across the range of possible hash values, for example if using hash-based data structures. A Java \texttt{HashSet} degenerates into a linked list if all of our objects hash to the same value.
-\begin{enumerate}
-\item Explain why Java's \texttt{String::hashCode} method is \textit{not} a hash function according to our definition. %2 marks
-
-\item S
-\end{enumerate}
-
-\end{enumerate}
-\end{enumerate}
-
 \newpage
 \section{Last Shot}
 \epigraph{It's been a long day, without you my friend \\
@@ -389,7 +452,14 @@ And I'll tell you all about it, when I see you again.
 \textbf{WARNING!} \\[11pt]
 As the final question, this is designed to be the most difficult question in the paper. Good luck!
 \end{center}
-T
+This question concerns the \textit{actor model} of concurrency and frameworks
+built around this model. An \textit{actor} is treated as a primitive of concurrent
+computation; actors communicate only by passing messages with one another.
+Actors are also allowed to create additional actors, and internally maintain
+state.
+
+
+
 \newpage
 \begin{thebibliography}{9}
 \bibitem{endsleigh}
