@@ -498,15 +498,21 @@ with the above expression of the incrementor.
 above syntax we also support two new operations:
 
 \begin{itemize}
-\item $x(y, z).P$ means that a process accepts \textit{two} inputs on channel
+\item $x(y, z).P$ means that a process accepts a vector of \textit{two} inputs on 
+channel
 $x$, binds the first input to instances of $y$ and the second to instances of $z$,
 and then runs $P$.
-\item $\overline{x} \langle y, z \rangle. P$ means that a process sends two outputs
+\item $\overline{x} \langle y, z \rangle. P$ means that a process sends a vector of 
+the outputs
 $y$ and $z$ on the channel $x$, and then runs $P$.
 \end{itemize}
 
+The corresponding reduction rule would be that
+$\overline{x} \langle y_1, y_2 \rangle. P | x(z_1, z_2). Q$ reduces to 
+$P|Q[y_1, y_2/z_1, z_2]$.
+
 The dyadic $\pi$-calculus is actually not more expressive than the monadic
-$\pi$-calculus as indicated above. This can be shown by providing an 
+$\pi$-calculus. This can be shown by providing an 
 \textit{encoding} of the dyadic $\pi$-calculus into the monadic $\pi$-calculus;
 specifically, we rewrite the two dyadic operators in the monadic $\pi$-calculus.
 
