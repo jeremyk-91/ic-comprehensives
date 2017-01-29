@@ -459,12 +459,78 @@ Actors are also allowed to create additional actors, and internally maintain
 local state.
 
 \begin{enumerate}
-\item The \textit{$\pi$-calculus} is a process calculus that had design influenced
-by the actor model. We provide an outline of the syntax of the $\pi$-calculus.
+\item The \textit{$\pi$-calculus} is a process calculus that had its design 
+influenced by the actor model. We provide an outline of the syntax of the 
+monadic $\pi$-calculus.
+
+\begin{itemize}
+\item $0$ means a process does nothing (or it can be used to terminate processes).
+\item $x(y).P$ means that a process accepts an input on channel $x$, then binds
+$y$ to instances of $x$, and then runs $P$.
+\item $\overline{x} \langle y \rangle. P$ means that a process sends an output
+$y$ on the channel $x$, and then runs $P$.
+\item $P | Q$ means that $P$ and $Q$ are run in parallel.
+\item $(\nu x) P$ means that a new channel $x$ is created, and then $P$ is run.
+\item $!P$ means that infinitely many copies of $P$ are generated.
+\end{itemize}
+
+In terms of semantics, the main reduction rule is that of communication: the
+process $\overline{x} \langle y \rangle. P | x(z). Q$ reduces to $P|Q[y/z]$,
+meaning that $y$ replaces the free occurrences of $z$ in $Q$.
 
 \begin{enumerate}
-\item Show that foo.
+\item The process $\textbf{D} k$ is called a \textit{duplicator}; it receives
+an input on channel $k$ and then generates two of that output on $k$ (once only). 
+Express a duplicator in the $\pi$-calculus.
+%2 marks. D k = k(x).(overline k<x>.0 | overline k<x>.0)
+
+\item Let's suppose that we allow numeric inputs, and we want to design an
+\textit{incrementor}; it receives a value on a channel and outputs a value that
+is one higher (infinitely many times). A possible expression of this is
+$!(x(v).\overline{x} \langle v + 1 \rangle)$.
+
+The above solution is vulnerable to a race condition. Demonstrate a safety
+violation (that is, a process submitting $v$ and \textit{not} receiving $v+1$) 
+with the above expression of the incrementor.
+%2 marks, the problem is that x is common.
+
+\item Consider the \textit{dyadic $\pi$-calculus}, where in addition to the
+above syntax we also support two new operations:
+
+\begin{itemize}
+\item $x(y, z).P$ means that a process accepts \textit{two} inputs on channel
+$x$, binds the first input to instances of $y$ and the second to instances of $z$,
+and then runs $P$.
+\item $\overline{x} \langle y, z \rangle. P$ means that a process sends two outputs
+$y$ and $z$ on the channel $x$, and then runs $P$.
+\end{itemize}
+
+The dyadic $\pi$-calculus is actually not more expressive than the monadic
+$\pi$-calculus as indicated above. This can be shown by providing an 
+\textit{encoding} of the dyadic $\pi$-calculus into the monadic $\pi$-calculus;
+specifically, we rewrite the two dyadic operators in the monadic $\pi$-calculus.
+
+\begin{enumerate}
+\item This is one possible encoding: $[[x(y, z).P]] = x(y).x(z).P$ and 
+$[[\overline{x} \langle y, z \rangle. P]] = \overline{x} \langle y \rangle. \overline{x} \langle z \rangle. P$. However, this encoding is
+incorrect -- provide a safety violation demonstrating this.
+\item Propose a correct encoding of the dyadic $\pi$-calculus into the monadic
+$\pi$-calculus. (Hint: The $\nu$ operator is the only construct that can generate
+a name known to be unique.)
+\item The \textit{polyadic} $\pi$-calculus is a further extension of the dyadic
+$\pi$-calculus, allowing arbitrarily many inputs and outputs. Based on your result 
+in the previous part, write down an encoding of the polyadic $\pi$-calculus into
+the monadic $\pi$-calculus.
 \end{enumerate}
+%1, 2, 1; 4 marks.
+
+\item Propose an alternative implementation of the incrementor and auxiliary
+processes that is safe under concurrent execution. You may use the polyadic
+$\pi$-calculus. Briefly argue why your implementation is safe (a reduction
+is not required).
+% 3 marks.
+\end{enumerate}
+[11 marks]
 
 \item Consider the problem of actually implementing the actor model in a distributed
 system. We introduce several concepts and ideas from Microsoft's \textit{Orleans} 
