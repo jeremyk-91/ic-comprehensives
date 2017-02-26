@@ -514,9 +514,12 @@ and a GUID $K$. We compute $h(T, K)$ and find the nearest token to us going
 counter-clockwise; the server which owns that token is the server where $A$ should 
 live.
 
-Show that %TODO non-mutex (section 3.9)
-
+Consider an alternative scheme, where in a cluster of $N$ servers, we
+store information regarding the actor $A$ at $h(T, K) \mod N$. Suggest reasons
+why Orleans might prefer the consistent hashing approach.
+%3 marks.
 \end{enumerate}
+[9 marks]
 
 \item The \textit{$\pi$-calculus} is a process calculus that had its design 
 influenced by the actor model. We provide an outline of the syntax of the 
@@ -569,7 +572,7 @@ $y$ and $z$ on the channel $x$, and then runs $P$.
 The corresponding reduction rule would be that
 $\overline{x} \langle y_1, y_2 \rangle. P | x(z_1, z_2). Q$ reduces to 
 $P|Q[y_1, y_2/z_1, z_2]$.
-
+\\[11pt]
 The dyadic $\pi$-calculus is actually not more expressive than the monadic
 $\pi$-calculus. This can be shown by providing an 
 \textit{encoding} of the dyadic $\pi$-calculus into the monadic $\pi$-calculus;
